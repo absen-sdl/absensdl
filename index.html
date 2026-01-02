@@ -1,0 +1,2143 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Absensi Pramuka Ambalan Sunan Drajat</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .loading-spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Tunas Kelapa Pramuka Animations */
+    .tunas-kelapa {
+      position: absolute;
+      opacity: 0.2;
+      filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+    }
+    
+    .tunas-left {
+      width: 180px;
+      height: 180px;
+      top: 50%;
+      left: 8%;
+      transform: translateY(-50%);
+      animation: float-rotate-left 8s ease-in-out infinite;
+    }
+    
+    .tunas-right {
+      width: 180px;
+      height: 180px;
+      top: 50%;
+      right: 8%;
+      transform: translateY(-50%);
+      animation: float-rotate-right 8s ease-in-out infinite;
+    }
+    
+    @keyframes float-rotate-left {
+      0%, 100% { 
+        transform: translateY(-50%) scale(1) rotate(0deg);
+        opacity: 0.2;
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4)) brightness(1);
+      }
+      25% {
+        transform: translateY(-55%) scale(1.1) rotate(10deg);
+        opacity: 0.35;
+        filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6)) brightness(1.3);
+      }
+      50% { 
+        transform: translateY(-45%) scale(1.05) rotate(-5deg);
+        opacity: 0.25;
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)) brightness(1.1);
+      }
+      75% {
+        transform: translateY(-52%) scale(1.08) rotate(8deg);
+        opacity: 0.3;
+        filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.55)) brightness(1.2);
+      }
+    }
+    
+    @keyframes float-rotate-right {
+      0%, 100% { 
+        transform: translateY(-50%) scale(1) rotate(0deg);
+        opacity: 0.2;
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4)) brightness(1);
+      }
+      25% {
+        transform: translateY(-52%) scale(1.08) rotate(-8deg);
+        opacity: 0.3;
+        filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.55)) brightness(1.2);
+      }
+      50% { 
+        transform: translateY(-45%) scale(1.05) rotate(5deg);
+        opacity: 0.25;
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)) brightness(1.1);
+      }
+      75% {
+        transform: translateY(-55%) scale(1.1) rotate(-10deg);
+        opacity: 0.35;
+        filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6)) brightness(1.3);
+      }
+    }
+    
+    /* Animasi bintang-bintang kecil di background */
+    .star-pramuka {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.6);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      animation: twinkle 3s ease-in-out infinite;
+    }
+    
+    @keyframes twinkle {
+      0%, 100% { 
+        opacity: 0.3;
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 1;
+        transform: scale(1.5);
+      }
+    }
+    
+    /* Animasi garis diagonal bergerak */
+    .diagonal-line {
+      position: absolute;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: move-diagonal 10s linear infinite;
+    }
+    
+    @keyframes move-diagonal {
+      0% {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateX(200%);
+        opacity: 0;
+      }
+    }
+    
+    /* Modern Icon Styles */
+    .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5em;
+      height: 1.5em;
+    }
+    .icon-sm {
+      width: 1em;
+      height: 1em;
+    }
+    .icon-lg {
+      width: 2em;
+      height: 2em;
+    }
+    .icon-xl {
+      width: 3em;
+      height: 3em;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div id="app" class="w-full h-full overflow-auto" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);"><!-- Login Page -->
+   <div id="loginPage" class="min-h-screen flex items-center justify-center px-4 py-12"><!-- Theme Toggle Button - Top Right Corner --> <button onclick="toggleThemeQuick()" id="loginThemeToggleBtn" class="fixed top-6 right-6 bg-white bg-opacity-90 hover:bg-opacity-100 p-3 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:scale-110 z-50"> <span id="loginThemeIcon"><i data-feather="sun" class="w-6 h-6"></i></span> </button>
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md transform hover:scale-105 transition-all duration-300">
+     <div class="text-center mb-8">
+      <div class="mb-4 flex justify-center"><img src="https://iili.io/fhENlTJ.png" alt="Logo Pramuka" class="w-40 h-40 object-contain" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-40 h-40 flex items-center justify-center\'><i data-feather=\'shield\' class=\'w-32 h-32 text-purple-600\'></i></div>';">
+      </div>
+      <h2 class="text-base font-semibold text-purple-600 mb-1" id="pramukaLabel">PRAMUKA</h2>
+      <h3 class="text-lg font-bold text-purple-700 mb-3" id="schoolNameLogin">AMBALAN SUNAN DRAJAT</h3>
+      <p class="text-gray-600 text-sm" id="loginSubtitle">Silakan login untuk melanjutkan</p>
+     </div>
+     <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-6">
+      <div><label for="username" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"> <i data-feather="user" class="w-4 h-4"></i> Username </label> <input type="text" id="username" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors" placeholder="Masukkan username">
+      </div>
+      <div><label for="password" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"> <i data-feather="lock" class="w-4 h-4"></i> Password </label>
+       <div class="relative"><input type="password" id="password" required class="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors" placeholder="Masukkan password"> <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors" id="togglePasswordBtn"> <i data-feather="eye" class="w-5 h-5"></i> </button>
+       </div>
+      </div>
+      <div id="loginError" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2"><i data-feather="alert-circle" class="w-4 h-4"></i> <span>Username atau password salah!</span>
+      </div><button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-2"> <i data-feather="log-in" class="w-5 h-5"></i> Login Sekarang </button>
+     </form>
+     <div class="mt-6 text-center text-xs text-gray-500">
+      <p>© 2026 <a href="#" onclick="openInstagram(event)" class="text-blue-600 hover:text-blue-800 hover:underline transition-colors">editz.stry</a>. All rights reserved</p>
+     </div>
+    </div>
+   </div><!-- Main App (Hidden by default) -->
+   <div id="mainApp" class="hidden pb-20"><!-- Header with Tunas Kelapa Pramuka Animations -->
+    <header class="text-white py-6 px-6 shadow-lg relative overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);">
+     <div class="absolute inset-0"><!-- Logo Tunas Kelapa Besar - Kiri dan Kanan --> <img src="https://iili.io/fhmMjol.png" alt="" class="tunas-kelapa tunas-left" onerror="this.style.display='none';"> <img src="https://iili.io/fhmMjol.png" alt="" class="tunas-kelapa tunas-right" onerror="this.style.display='none';"> <!-- Bintang-bintang Kecil Pramuka -->
+      <div class="star-pramuka" style="top: 15%; left: 20%; animation-delay: 0s;"></div>
+      <div class="star-pramuka" style="top: 25%; left: 35%; animation-delay: 0.5s;"></div>
+      <div class="star-pramuka" style="top: 35%; left: 15%; animation-delay: 1s;"></div>
+      <div class="star-pramuka" style="top: 20%; right: 25%; animation-delay: 0.3s;"></div>
+      <div class="star-pramuka" style="top: 30%; right: 40%; animation-delay: 0.8s;"></div>
+      <div class="star-pramuka" style="top: 40%; right: 20%; animation-delay: 1.2s;"></div>
+      <div class="star-pramuka" style="bottom: 20%; left: 25%; animation-delay: 0.6s;"></div>
+      <div class="star-pramuka" style="bottom: 30%; left: 40%; animation-delay: 1.4s;"></div>
+      <div class="star-pramuka" style="bottom: 25%; right: 30%; animation-delay: 0.4s;"></div>
+      <div class="star-pramuka" style="bottom: 35%; right: 15%; animation-delay: 1.1s;"></div><!-- Garis Diagonal Bergerak -->
+      <div class="diagonal-line" style="left: 10%; animation-delay: 0s;"></div>
+      <div class="diagonal-line" style="left: 30%; animation-delay: 3s;"></div>
+      <div class="diagonal-line" style="left: 50%; animation-delay: 6s;"></div>
+      <div class="diagonal-line" style="left: 70%; animation-delay: 9s;"></div>
+      <div class="diagonal-line" style="left: 90%; animation-delay: 2s;"></div>
+     </div>
+     <div class="max-w-7xl mx-auto relative z-10">
+      <div class="flex items-center gap-4 mb-4"><img src="https://iili.io/fhENlTJ.png" alt="Logo Pramuka" class="w-28 h-28 object-contain" onerror="this.style.display='none'; this.outerHTML='<i data-feather=\'shield\' class=\'w-28 h-28 text-white\'></i>';">
+       <div class="flex-1">
+        <p class="text-lg font-semibold mb-1">PRAMUKA</p>
+        <h1 id="schoolName" class="text-3xl font-bold mb-2">AMBALAN SUNAN DRAJAT</h1>
+        <p id="teacherName" class="text-lg opacity-90">Guru: AFIFUL WAFI</p>
+       </div>
+      </div>
+      <div class="flex flex-wrap gap-4 text-sm">
+       <div id="currentDate" class="bg-white bg-opacity-20 px-4 py-2 rounded-lg flex items-center gap-2"><i data-feather="calendar" class="w-4 h-4"></i> <span></span>
+       </div>
+       <div id="currentTime" class="bg-white bg-opacity-20 px-4 py-2 rounded-lg flex items-center gap-2"><i data-feather="clock" class="w-4 h-4"></i> <span></span>
+       </div>
+      </div>
+     </div>
+    </header><!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8"><!-- Menu Absensi -->
+     <div id="menuAbsensi" class="menu-content fade-in">
+      <div class="bg-white rounded-xl shadow-xl p-6 mb-6">
+       <h2 class="text-2xl font-bold mb-6 text-gray-800">Absensi Anggota</h2>
+       <div class="mb-6"><label class="block text-sm font-semibold mb-2 text-gray-700" id="selectClassLabel">Pilih Kelas untuk Absensi</label> <select id="kelasFilter" onchange="filterByKelas()" class="w-full md:w-64 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"> <option value="">-- Pilih Kelas --</option> <option value="SEMUA">Semua Kelas</option> <option value="X">Kelas X</option> <option value="XI">Kelas XI</option> <option value="XII">Kelas XII</option> </select> <!-- Keterangan Status -->
+        <div id="keteranganStatus" class="mt-4 bg-blue-50 border-2 border-blue-200 rounded-lg p-4 hidden">
+         <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2"><i data-feather="info" class="w-5 h-5 text-blue-600"></i> Keterangan Status Absensi:</h4>
+         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="flex items-center gap-2"><span class="bg-gradient-to-br from-emerald-400 to-green-600 text-white px-3 py-2 rounded-lg font-bold text-sm shadow-md flex items-center gap-1"> <i data-feather="check" class="w-4 h-4"></i> H </span> <span class="text-gray-700 font-semibold">Hadir</span>
+          </div>
+          <div class="flex items-center gap-2"><span class="bg-gradient-to-br from-amber-400 to-orange-600 text-white px-3 py-2 rounded-lg font-bold text-sm shadow-md flex items-center gap-1"> <i data-feather="activity" class="w-4 h-4"></i> S </span> <span class="text-gray-700 font-semibold">Sakit</span>
+          </div>
+          <div class="flex items-center gap-2"><span class="bg-gradient-to-br from-sky-400 to-blue-600 text-white px-3 py-2 rounded-lg font-bold text-sm shadow-md flex items-center gap-1"> <i data-feather="file-text" class="w-4 h-4"></i> I </span> <span class="text-gray-700 font-semibold">Izin</span>
+          </div>
+          <div class="flex items-center gap-2"><span class="bg-gradient-to-br from-rose-400 to-red-600 text-white px-3 py-2 rounded-lg font-bold text-sm shadow-md flex items-center gap-1"> <i data-feather="x" class="w-4 h-4"></i> A </span> <span class="text-gray-700 font-semibold">Alpha</span>
+          </div>
+         </div>
+        </div>
+       </div>
+       <div id="loadingData" class="hidden text-center py-12">
+        <div class="loading-spinner mx-auto"></div>
+        <p class="mt-4 text-gray-600">Memuat data anggota...</p>
+       </div>
+       <div id="emptyState" class="text-center py-12">
+        <div class="mb-4 flex justify-center"><i data-feather="arrow-down" class="w-16 h-16 text-gray-400"></i>
+        </div>
+        <p class="text-gray-600 text-lg">Silakan pilih kelas terlebih dahulu untuk menampilkan data anggota</p>
+       </div>
+       <div id="absensiList" class="hidden space-y-3 mb-6"></div>
+       <div id="submitSection" class="hidden"><button onclick="submitAbsensi()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-colors shadow-lg flex items-center justify-center gap-2"> <i data-feather="send" class="w-5 h-5"></i> Kirim Absensi </button>
+       </div>
+      </div>
+     </div><!-- Menu Rekap -->
+     <div id="menuRekap" class="menu-content hidden">
+      <div class="bg-white rounded-xl shadow-xl p-6">
+       <h2 class="text-2xl font-bold mb-6 text-gray-800">Rekap Absensi</h2>
+       <div class="mb-6 flex flex-wrap gap-4 items-end">
+        <div><label class="block text-sm font-semibold mb-2 text-gray-700">Filter Kelas</label> <select id="rekapKelasFilter" onchange="loadSiswaByKelas()" class="px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"> <option value="">-- Pilih Kelas --</option> <option value="SEMUA">Semua Kelas</option> <option value="X">Kelas X</option> <option value="XI">Kelas XI</option> <option value="XII">Kelas XII</option> </select>
+        </div>
+        <div id="kegiatanFilterDiv" class="hidden"><label class="block text-sm font-semibold mb-2 text-gray-700">Pilih Kegiatan</label> <select id="rekapKegiatanFilter" onchange="loadRekapData()" class="px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"> <option value="">-- Pilih Kegiatan --</option> </select>
+        </div>
+        <div id="dateFilterDiv" class="hidden"><label class="block text-sm font-semibold mb-2 text-gray-700">Pilih Tanggal</label> <select id="rekapDateFilter" onchange="loadRekapData()" class="px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"> <option value="">-- Pilih Tanggal --</option> </select>
+        </div>
+        <div id="jamFilterDiv" class="hidden"><label class="block text-sm font-semibold mb-2 text-gray-700">Pilih Jam</label> <select id="rekapJamFilter" onchange="loadRekapData()" class="px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"> <option value="">-- Pilih Jam --</option> </select>
+        </div>
+        <div id="siswaFilterDiv" class="hidden"><label class="block text-sm font-semibold mb-2 text-gray-700">Pilih Siswa (Opsional)</label> <select id="rekapSiswaFilter" onchange="loadRekapData()" class="px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"> <option value="">Semua Siswa</option> </select>
+        </div>
+        <div id="refreshBtnDiv" class="hidden"><button onclick="loadRekapData()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-lg transition-colors flex items-center gap-2 shadow-md"> <i data-feather="refresh-cw" class="w-5 h-5"></i> <span>Refresh Data</span> </button>
+        </div>
+       </div>
+       <div id="rekapContent" class="overflow-x-auto">
+        <div class="text-center py-12">
+         <p class="text-gray-600">Pilih filter untuk melihat rekap absensi</p>
+        </div>
+       </div>
+      </div>
+     </div><!-- Menu Data Anggota -->
+     <div id="menuAnggota" class="menu-content hidden">
+      <div class="bg-white rounded-xl shadow-xl p-6">
+       <h2 class="text-2xl font-bold mb-6 text-gray-800">Data Anggota</h2>
+       <div class="mb-6"><label class="block text-sm font-semibold mb-2 text-gray-700">Filter Kelas</label> <select id="anggotaKelasFilter" onchange="filterAnggotaByKelas()" class="px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"> <option value="">Semua Kelas</option> <option value="X">Kelas X</option> <option value="XI">Kelas XI</option> <option value="XII">Kelas XII</option> </select>
+       </div>
+       <div id="anggotaContent" class="overflow-x-auto"></div>
+      </div>
+     </div><!-- Menu Pengaturan -->
+     <div id="menuSettings" class="menu-content hidden">
+      <div class="bg-white rounded-xl shadow-xl p-6 max-w-3xl">
+       <div class="flex items-center gap-3 mb-6"><i data-feather="settings" class="w-8 h-8 text-gray-700"></i>
+        <h2 class="text-2xl font-bold text-gray-800">Pengaturan Aplikasi</h2>
+       </div>
+       <div class="space-y-6"><!-- Pengaturan Nama Guru/Pembina -->
+        <div class="border-b border-gray-200 pb-6">
+         <h3 class="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2"><i data-feather="user" class="w-5 h-5"></i> Nama Guru/Pembina</h3>
+         <div><label for="settingsTeacherName" class="block text-sm font-semibold mb-2 text-gray-700"> Nama Guru/Pembina </label> <input type="text" id="settingsTeacherName" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors" placeholder="Masukkan nama guru atau pembina">
+         </div>
+        </div><!-- Pengaturan Bahasa dan Zona Waktu -->
+        <div class="border-b border-gray-200 pb-6">
+         <h3 class="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2"><i data-feather="globe" class="w-5 h-5"></i> Bahasa &amp; Zona Waktu</h3>
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><!-- Bahasa -->
+          <div><label class="block text-sm font-semibold mb-3 text-gray-700"> Pilih Bahasa </label> <select id="languageSelect" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"> <option value="id">🇮🇩 Indonesia</option> <option value="en">🇬🇧 English</option> <option value="ar">🇸🇦 العربية (Arab)</option> <option value="zh">🇨🇳 中文 (China)</option> <option value="ru">🇷🇺 ��усский (Rusia)</option> </select>
+          </div><!-- Zona Waktu -->
+          <div><label class="block text-sm font-semibold mb-3 text-gray-700"> Zona Waktu Indonesia </label> <select id="timezoneSelect" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"> <option value="WIB">🕐 WIB (UTC+7)</option> <option value="WITA">🕑 WITA (UTC+8)</option> <option value="WIT">🕒 WIT (UTC+9)</option> </select>
+          </div>
+         </div>
+         <p class="text-xs text-gray-500 mt-3 flex items-center gap-1"><i data-feather="info" class="w-3 h-3"></i> Pilih bahasa dan zona waktu sesuai lokasi Anda</p>
+        </div><!-- Pengaturan Tema -->
+        <div class="border-b border-gray-200 pb-6">
+         <h3 class="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2"><i data-feather="droplet" class="w-5 h-5"></i> Tema Aplikasi</h3>
+         <div><label class="block text-sm font-semibold mb-3 text-gray-700"> Pilih Tema </label>
+          <div class="flex gap-4"><button onclick="setTheme('light')" id="themeLightBtn" class="flex-1 px-6 py-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 transition-all flex items-center justify-center gap-3 font-semibold"> <i data-feather="sun" class="w-6 h-6"></i> <span>Tema Terang</span> </button> <button onclick="setTheme('dark')" id="themeDarkBtn" class="flex-1 px-6 py-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 transition-all flex items-center justify-center gap-3 font-semibold"> <i data-feather="moon" class="w-6 h-6"></i> <span>Tema Gelap</span> </button>
+          </div>
+         </div>
+        </div><!-- Lihat Data -->
+        <div class="border-b border-gray-200 pb-6" id="exportDataSection">
+         <h3 class="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2"><i data-feather="database" class="w-5 h-5"></i> Lihat Data</h3>
+         <p class="text-sm text-gray-600 mb-4">Lihat dan akses data rekap absensi langsung dari Google Sheet</p>
+         <div class="space-y-3"><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRtFturWpUYmC24g_GWLdQQdMHqunel2SWQ7Ix4s9dNMnUGNeoyY8hRpxZmogDiw5GuBBs_w4HF5Ga_/pubhtml?gid=987258577&amp;single=true" target="_blank" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"> <i data-feather="external-link" class="w-5 h-5"></i> Lihat Semua Data (Google Sheet) </a>
+          <p class="text-xs text-gray-500 text-center flex items-center justify-center gap-1"><i data-feather="info" class="w-3 h-3"></i> Klik tombol di atas untuk melihat semua data absensi di Google Sheet</p>
+         </div>
+        </div><!-- Tombol Simpan -->
+        <div><button onclick="saveSettings()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"> <i data-feather="save" class="w-5 h-5"></i> Simpan Pengaturan </button>
+        </div><!-- Tombol Logout -->
+        <div class="border-t border-gray-200 pt-6">
+         <h3 class="text-lg font-bold text-gray-700 mb-3 flex items-center gap-2"><i data-feather="log-out" class="w-5 h-5"></i> Keluar dari Aplikasi</h3>
+         <p class="text-sm text-gray-600 mb-4">Logout dari aplikasi dan kembali ke halaman login</p><button onclick="handleLogout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"> <i data-feather="log-out" class="w-5 h-5"></i> Logout </button>
+        </div>
+        <div id="settingsMessage" class="hidden p-4 rounded-lg text-center font-semibold"></div><!-- Copyright -->
+        <div class="text-center pt-6 border-t border-gray-200">
+         <p class="text-xs text-gray-500">© 2026 <a href="#" onclick="openInstagram(event)" class="text-blue-600 hover:text-blue-800 hover:underline transition-colors">editz.stry</a>. All rights reserved</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </main>
+   </div><!-- Bottom Navigation Bar -->
+   <nav class="bg-white shadow-lg fixed bottom-0 left-0 right-0 z-50 border-t-2 border-gray-200" id="bottomNav" style="display: none;">
+    <div class="max-w-7xl mx-auto">
+     <div class="flex justify-around items-center"><button onclick="showMenu('absensi')" id="btnAbsensi" class="nav-btn flex flex-col items-center justify-center py-2 px-4 font-semibold transition-all flex-1 hover:bg-gray-50 active:bg-gray-100"> <i data-feather="check-circle" class="w-7 h-7 mb-1"></i> <span class="text-xs text-gray-600">Absensi</span> </button> <button onclick="showMenu('rekap')" id="btnRekap" class="nav-btn flex flex-col items-center justify-center py-2 px-4 font-semibold transition-all flex-1 hover:bg-gray-50 active:bg-gray-100"> <i data-feather="bar-chart-2" class="w-7 h-7 mb-1"></i> <span class="text-xs text-gray-600">Rekap</span> </button> <button onclick="showMenu('anggota')" id="btnAnggota" class="nav-btn flex flex-col items-center justify-center py-2 px-4 font-semibold transition-all flex-1 hover:bg-gray-50 active:bg-gray-100"> <i data-feather="users" class="w-7 h-7 mb-1"></i> <span class="text-xs text-gray-600">Data</span> </button> <button onclick="showMenu('settings')" id="btnSettings" class="nav-btn flex flex-col items-center justify-center py-2 px-4 font-semibold transition-all flex-1 hover:bg-gray-50 active:bg-gray-100"> <i data-feather="settings" class="w-7 h-7 mb-1"></i> <span class="text-xs text-gray-600">Pengaturan</span> </button>
+     </div>
+    </div>
+   </nav><!-- Modal Loading -->
+   <div id="modalLoading" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center">
+     <div class="loading-spinner mx-auto mb-4"></div>
+     <h3 class="text-xl font-bold mb-2">Mengirim Data</h3>
+     <p class="text-gray-600">Mohon menunggu, sedang mengirim absensi...</p>
+     <p id="progressText" class="text-sm text-blue-600 mt-2"></p>
+    </div>
+   </div><!-- Modal Success -->
+   <div id="modalSuccess" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center">
+     <div class="mb-4 flex justify-center"><i data-feather="check-circle" class="w-20 h-20 text-green-600" stroke-width="1.5"></i>
+     </div>
+     <h3 class="text-2xl font-bold mb-2 text-green-600">Berhasil!</h3>
+     <p id="successMessage" class="text-gray-700 mb-6"></p><button onclick="closeSuccessModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"> OK </button>
+    </div>
+   </div><!-- Modal Error -->
+   <div id="modalError" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center">
+     <div class="mb-4 flex justify-center"><i data-feather="x-circle" class="w-20 h-20 text-red-600" stroke-width="1.5"></i>
+     </div>
+     <h3 class="text-2xl font-bold mb-2 text-red-600">Gagal!</h3>
+     <p id="errorMessage" class="text-gray-700 mb-6"></p><button onclick="closeErrorModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"> OK </button>
+    </div>
+   </div><!-- Modal Logout Confirmation -->
+   <div id="modalLogout" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center">
+     <div class="mb-4 flex justify-center"><i data-feather="log-out" class="w-20 h-20 text-gray-700" stroke-width="1.5"></i>
+     </div>
+     <h3 class="text-2xl font-bold mb-2 text-gray-800">Konfirmasi Logout</h3>
+     <p class="text-gray-700 mb-6">Apakah Anda yakin ingin keluar dari aplikasi?</p>
+     <div class="flex gap-3 justify-center"><button onclick="confirmLogout()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center gap-2"> <i data-feather="check" class="w-4 h-4"></i> Ya, Logout </button> <button onclick="cancelLogout()" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center gap-2"> <i data-feather="x" class="w-4 h-4"></i> Batal </button>
+     </div>
+    </div>
+   </div><!-- Modal Jenis Kegiatan -->
+   <div id="modalJenisKegiatan" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-8 max-w-md mx-4">
+     <div class="text-center mb-6">
+      <div class="mb-4 flex justify-center"><i data-feather="clipboard" class="w-20 h-20 text-blue-600" stroke-width="1.5"></i>
+      </div>
+      <h3 class="text-2xl font-bold mb-2 text-gray-800">Isi Jenis Kegiatan</h3>
+      <p class="text-gray-600 text-sm">Mohon isi jenis kegiatan sebelum mengirim absensi</p>
+     </div>
+     <form id="formJenisKegiatan" onsubmit="confirmSubmitAbsensi(event)">
+      <div class="mb-6"><label for="inputJenisKegiatan" class="block text-sm font-semibold mb-2 text-gray-700"> Jenis Kegiatan </label> <input type="text" id="inputJenisKegiatan" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors" placeholder="Contoh: Latihan Rutin, Perkemahan, Upacara, dll">
+       <p class="text-xs text-gray-500 mt-2 flex items-center gap-1"><i data-feather="info" class="w-3 h-3"></i> Contoh: Latihan Rutin, Perkemahan Sabtu-Minggu, Upacara Hari Pramuka</p>
+      </div>
+      <div class="flex gap-3"><button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"> <i data-feather="check" class="w-4 h-4"></i> Lanjutkan Kirim </button> <button type="button" onclick="closeJenisKegiatanModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"> <i data-feather="x" class="w-4 h-4"></i> Batal </button>
+      </div>
+     </form>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      background_color: "#1e3a8a",
+      header_color: "#1e40af",
+      card_color: "#ffffff",
+      primary_button_color: "#16a34a",
+      secondary_button_color: "#3b82f6",
+      text_color: "#1f2937",
+      school_name: "AMBALAN SUNAN DRAJAT",
+      teacher_name: "AFIFUL WAFI",
+      menu_absensi: "Absensi Anggota",
+      menu_rekap: "Rekap Absensi",
+      menu_anggota: "Data Anggota",
+      menu_settings_label: "Pengaturan",
+      font_family: "Inter",
+      font_size: 16,
+      theme: "light"
+    };
+
+    let allMembers = [];
+    let filteredMembers = [];
+    let currentMenu = 'absensi';
+    let loggedInUser = '';
+    let currentLanguage = 'id';
+    let currentTimezone = 'WIB';
+
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRtFturWpUYmC24g_GWLdQQdMHqunel2SWQ7Ix4s9dNMnUGNeoyY8hRpxZmogDiw5GuBBs_w4HF5Ga_/pub?gid=0&output=csv';
+    const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbzUWa_6rlemZX8c3bkOGSkx_3IZnjVdorlc8EDR4xCk4BTcW6TWxgLUGmE2pEizwhFP/exec';
+    const REKAP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRtFturWpUYmC24g_GWLdQQdMHqunel2SWQ7Ix4s9dNMnUGNeoyY8hRpxZmogDiw5GuBBs_w4HF5Ga_/pub?gid=987258577&output=csv';
+
+    // Function to open Instagram
+    function openInstagram(e) {
+      e.preventDefault();
+      const username = 'editz.stry';
+      const instagramApp = `instagram://user?username=${username}`;
+      const instagramWeb = `https://www.instagram.com/${username}/`;
+      
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        window.location.href = instagramApp;
+        setTimeout(() => {
+          window.open(instagramWeb, '_blank');
+        }, 1500);
+      } else {
+        window.open(instagramWeb, '_blank');
+      }
+    }
+
+    // Translations remain the same...
+    const translations = {
+      id: {
+        login: 'Login Sekarang',
+        username: 'Username',
+        password: 'Password',
+        loginError: 'Username atau password salah!',
+        schoolName: 'AMBALAN SUNAN DRAJAT',
+        teacher: 'Guru',
+        menuAbsensi: 'Absensi',
+        menuRekap: 'Rekap',
+        menuData: 'Data',
+        menuSettings: 'Pengaturan',
+        absensiTitle: 'Absensi Anggota',
+        rekapTitle: 'Rekap Absensi',
+        dataTitle: 'Data Anggota',
+        settingsTitle: 'Pengaturan Aplikasi',
+        selectClass: '-- Pilih Kelas --',
+        allClass: 'Semua Kelas',
+        loading: 'Memuat data anggota...',
+        selectClassFirst: 'Silakan pilih kelas terlebih dahulu untuk menampilkan data anggota',
+        submit: 'Kirim Absensi',
+        hadir: 'Hadir',
+        sakit: 'Sakit',
+        izin: 'Izin',
+        alpha: 'Alpha',
+        logout: 'Logout',
+        confirmLogout: 'Konfirmasi Logout',
+        confirmLogoutMsg: 'Apakah Anda yakin ingin keluar dari aplikasi?',
+        yes: 'Ya, Logout',
+        cancel: 'Batal',
+        sending: 'Mengirim Data',
+        sendingMsg: 'Mohon menunggu, sedang mengirim absensi...',
+        success: 'Berhasil!',
+        failed: 'Gagal!',
+        ok: 'OK',
+        languageLabel: 'Bahasa Aplikasi',
+        selectLanguage: 'Pilih Bahasa',
+        themeLabel: 'Tema Aplikasi',
+        selectTheme: 'Pilih Tema',
+        lightTheme: 'Tema Terang',
+        darkTheme: 'Tema Gelap',
+        teacherName: 'Nama Guru/Pembina',
+        saveSettings: 'Simpan Pengaturan',
+        settingsSaved: '✅ Pengaturan berhasil disimpan!',
+        jenisKegiatan: 'Jenis Kegiatan',
+        jenisKegiatanLabel: 'Isi Jenis Kegiatan',
+        jenisKegiatanMsg: 'Mohon isi jenis kegiatan sebelum mengirim absensi',
+        continue: 'Lanjutkan Kirim',
+        viewData: 'Lihat Data',
+        viewDataLabel: 'Lihat dan akses data rekap absensi langsung dari Google Sheet',
+        viewAllData: 'Lihat Semua Data (Google Sheet)',
+        filterClass: 'Filter Kelas',
+        selectActivity: 'Pilih Kegiatan',
+        selectDate: 'Pilih Tanggal',
+        selectTime: 'Pilih Jam',
+        selectStudent: 'Pilih Siswa (Opsional)',
+        allStudents: 'Semua Siswa',
+        refresh: 'Refresh Data',
+        pramuka: 'PRAMUKA',
+        silentLogin: 'Silakan login untuk melanjutkan',
+        loginPlaceholderUsername: 'Masukkan username',
+        loginPlaceholderPassword: 'Masukkan password',
+        chooseClassForAttendance: 'Pilih Kelas untuk Absensi',
+        member: 'anggota',
+        nia: 'NIA',
+        class: 'Kelas',
+        fullName: 'Nama Lengkap',
+        gender: 'Jenis Kelamin',
+        no: 'No',
+        date: 'Tanggal',
+        time: 'Waktu',
+        status: 'Status',
+        noData: 'Tidak ada data',
+        teacherLeader: 'Nama Guru/Pembina',
+        teacherLeaderPlaceholder: 'Masukkan nama guru atau pembina',
+        activityPlaceholder: 'Contoh: Latihan Rutin, Perkemahan, Upacara, dll',
+        selectTimeToView: 'Pilih jam untuk melihat data',
+        noDataForFilter: 'Tidak ada data untuk filter yang dipilih',
+        rekapData: 'Data Rekap Absensi',
+        dataAttendance: 'data absensi',
+        fromGoogleSheet: 'Data dari Google Sheet (Realtime)',
+        totalData: 'Total Data'
+      }
+    };
+
+    function changeLanguage() {
+      const lang = document.getElementById('languageSelect').value;
+      currentLanguage = lang;
+    }
+
+    function changeTimezone() {
+      const timezone = document.getElementById('timezoneSelect').value;
+      currentTimezone = timezone;
+    }
+
+    function getTimezoneOffset(timezone) {
+      const offsets = { 'WIB': 7, 'WITA': 8, 'WIT': 9 };
+      return offsets[timezone] || 7;
+    }
+
+    function getCurrentTime() {
+      const now = new Date();
+      const offset = getTimezoneOffset(currentTimezone);
+      const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const timezoneTime = new Date(utcTime + (offset * 3600000));
+      return timezoneTime;
+    }
+
+    function updateUILanguage() {
+      const t = translations[currentLanguage];
+      
+      if (document.getElementById('pramukaLabel')) {
+        document.getElementById('pramukaLabel').textContent = t.pramuka;
+      }
+      if (document.getElementById('schoolNameLogin')) {
+        document.getElementById('schoolNameLogin').textContent = t.schoolName;
+      }
+      if (document.getElementById('loginSubtitle')) {
+        document.getElementById('loginSubtitle').textContent = t.silentLogin;
+      }
+      
+      const teacherLabel = document.getElementById('teacherName');
+      if (teacherLabel) {
+        const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
+        const teacherName = config.teacher_name || defaultConfig.teacher_name;
+        teacherLabel.textContent = `${t.teacher}: ${teacherName}`;
+      }
+    }
+
+    const VALID_USERS = {
+      'admin': 'admin089',
+      'danang abdillah': 'danang132',
+      'user5': 'user67',
+      'afiful wafi': 'wafi1978'
+    };
+
+    const ADMIN_USERS = ['admin', 'danang abdillah', 'afiful wafi'];
+
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const toggleBtn = document.getElementById('togglePasswordBtn');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleBtn.innerHTML = '<i data-feather="eye-off" class="w-5 h-5"></i>';
+      } else {
+        passwordInput.type = 'password';
+        toggleBtn.innerHTML = '<i data-feather="eye" class="w-5 h-5"></i>';
+      }
+      feather.replace();
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('username').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('loginError');
+
+      if (VALID_USERS[username] && VALID_USERS[username] === password) {
+        loggedInUser = username;
+        errorDiv.classList.add('hidden');
+        
+        // Simpan username asli (tidak akan berubah)
+        localStorage.setItem('loggedInUser', username);
+        
+        const capitalizedName = username.split(' ').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+        
+        // Cek apakah ada nama pembina yang tersimpan khusus untuk username ini
+        const savedTeacherName = localStorage.getItem(`teacherName_${username}`);
+        const displayName = savedTeacherName || capitalizedName;
+        
+        if (window.elementSdk) {
+          window.elementSdk.setConfig({ teacher_name: displayName });
+        } else {
+          defaultConfig.teacher_name = displayName;
+          document.getElementById('teacherName').textContent = `Guru: ${displayName}`;
+        }
+        
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        document.getElementById('bottomNav').style.display = 'block';
+        
+        loadMemberData();
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        setTimeout(() => feather.replace(), 100);
+      } else {
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    function handleLogout() {
+      document.getElementById('modalLogout').classList.remove('hidden');
+      document.getElementById('modalLogout').classList.add('flex');
+      setTimeout(() => feather.replace(), 100);
+    }
+
+    function confirmLogout() {
+      document.getElementById('modalLogout').classList.add('hidden');
+      document.getElementById('modalLogout').classList.remove('flex');
+      
+      localStorage.removeItem('loggedInUser');
+      
+      loggedInUser = '';
+      document.getElementById('loginPage').classList.remove('hidden');
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('bottomNav').style.display = 'none';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('loginError').classList.add('hidden');
+      
+      setTimeout(() => feather.replace(), 100);
+    }
+
+    function cancelLogout() {
+      document.getElementById('modalLogout').classList.add('hidden');
+      document.getElementById('modalLogout').classList.remove('flex');
+    }
+
+    async function onConfigChange(config) {
+      document.getElementById('schoolName').textContent = config.school_name || defaultConfig.school_name;
+      document.getElementById('teacherName').textContent = `Kakak: ${config.teacher_name || defaultConfig.teacher_name}`;
+      
+      applyThemeStyles(config.theme || defaultConfig.theme);
+      
+      if (document.getElementById('settingsTeacherName')) {
+        document.getElementById('settingsTeacherName').value = config.teacher_name || defaultConfig.teacher_name;
+        updateThemeButtons(config.theme || defaultConfig.theme);
+      }
+    }
+
+    function updateNavButtons() {
+      const buttons = document.querySelectorAll('.nav-btn');
+      buttons.forEach(btn => {
+        if (btn.id === `btn${currentMenu.charAt(0).toUpperCase() + currentMenu.slice(1)}`) {
+          btn.style.backgroundColor = '#e0e7ff';
+          btn.style.borderRadius = '12px';
+        } else {
+          btn.style.backgroundColor = 'transparent';
+          btn.style.borderRadius = '0';
+        }
+      });
+    }
+
+    function updateDateTime() {
+      const now = getCurrentTime();
+      
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const dateStr = now.toLocaleDateString('id-ID', options);
+      
+      const timeStr = now.toLocaleTimeString('id-ID', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      });
+
+      const dateDiv = document.getElementById('currentDate');
+      const timeDiv = document.getElementById('currentTime');
+      
+      if (dateDiv && dateDiv.querySelector('span')) {
+        dateDiv.querySelector('span').textContent = dateStr;
+      }
+      if (timeDiv && timeDiv.querySelector('span')) {
+        timeDiv.querySelector('span').textContent = `${timeStr} ${currentTimezone}`;
+      }
+    }
+
+    async function loadMemberData() {
+      try {
+        const response = await fetch(SHEET_URL);
+        const csvText = await response.text();
+        const rows = csvText.split('\n').filter(row => row.trim());
+        
+        allMembers = [];
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].split(',').map(col => col.trim().replace(/^"|"$/g, ''));
+          if (cols.length >= 3 && cols[0] && cols[1]) {
+            allMembers.push({
+              nia: cols[0],
+              nama: cols[1],
+              kelas: cols[2],
+              jenisKelamin: cols[3] || ''
+            });
+          }
+        }
+
+        renderAnggotaList();
+      } catch (error) {
+        console.error('Gagal memuat data:', error);
+      }
+    }
+
+    function filterByKelas() {
+      const kelas = document.getElementById('kelasFilter').value;
+      
+      document.getElementById('emptyState').classList.add('hidden');
+      document.getElementById('absensiList').classList.add('hidden');
+      document.getElementById('submitSection').classList.add('hidden');
+      document.getElementById('keteranganStatus').classList.add('hidden');
+      
+      if (kelas === '') {
+        document.getElementById('emptyState').classList.remove('hidden');
+        return;
+      }
+      
+      document.getElementById('loadingData').classList.remove('hidden');
+      
+      setTimeout(() => {
+        if (kelas === 'SEMUA') {
+          filteredMembers = [...allMembers];
+        } else {
+          filteredMembers = allMembers.filter(m => m.kelas === kelas);
+        }
+        document.getElementById('loadingData').classList.add('hidden');
+        document.getElementById('keteranganStatus').classList.remove('hidden');
+        renderAbsensiList();
+        setTimeout(() => feather.replace(), 100);
+      }, 500);
+    }
+
+    function renderAbsensiList() {
+      const t = translations[currentLanguage];
+      const listDiv = document.getElementById('absensiList');
+      const submitSection = document.getElementById('submitSection');
+      
+      if (filteredMembers.length === 0) {
+        listDiv.innerHTML = `<p class="text-gray-600 text-center py-8">${t.selectClassFirst}</p>`;
+        listDiv.classList.remove('hidden');
+        submitSection.classList.add('hidden');
+        return;
+      }
+
+      const kelas = document.getElementById('kelasFilter').value;
+      const kelasLabel = kelas === 'SEMUA' ? t.allClass : `${t.filterClass} ${kelas}`;
+      
+      listDiv.innerHTML = `
+        <div class="mb-4">
+          <h3 class="text-xl font-bold text-gray-800">${kelasLabel} - ${filteredMembers.length} ${t.member}</h3>
+        </div>
+      ` + filteredMembers.map((member, idx) => `
+        <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 transition-colors">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex-1">
+              <p class="font-bold text-lg">${member.nama}</p>
+              <p class="text-sm text-gray-600">${t.nia}: ${member.nia} • ${t.class}: ${member.kelas} • ${member.jenisKelamin}</p>
+            </div>
+            <div class="flex gap-1 flex-wrap justify-end">
+              <button onclick="setStatus(${idx}, 'Hadir')" 
+                      data-idx="${idx}" 
+                      data-status="Hadir"
+                      title="${t.hadir}"
+                      class="status-btn group relative px-3 py-2 rounded-lg font-bold transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 bg-gradient-to-br from-emerald-400 to-green-600 text-white overflow-hidden">
+                <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                <i data-feather="check" class="w-5 h-5 relative z-10"></i>
+              </button>
+              <button onclick="setStatus(${idx}, 'Sakit')" 
+                      data-idx="${idx}" 
+                      data-status="Sakit"
+                      title="${t.sakit}"
+                      class="status-btn group relative px-3 py-2 rounded-lg font-bold transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 bg-gradient-to-br from-amber-400 to-orange-600 text-white overflow-hidden">
+                <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                <i data-feather="activity" class="w-5 h-5 relative z-10"></i>
+              </button>
+              <button onclick="setStatus(${idx}, 'Izin')" 
+                      data-idx="${idx}" 
+                      data-status="Izin"
+                      title="${t.izin}"
+                      class="status-btn group relative px-3 py-2 rounded-lg font-bold transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 bg-gradient-to-br from-sky-400 to-blue-600 text-white overflow-hidden">
+                <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                <i data-feather="file-text" class="w-5 h-5 relative z-10"></i>
+              </button>
+              <button onclick="setStatus(${idx}, 'Alpha')" 
+                      data-idx="${idx}" 
+                      data-status="Alpha"
+                      title="${t.alpha}"
+                      class="status-btn group relative px-3 py-2 rounded-lg font-bold transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 bg-gradient-to-br from-rose-400 to-red-600 text-white overflow-hidden">
+                <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                <i data-feather="x" class="w-5 h-5 relative z-10"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      listDiv.classList.remove('hidden');
+      submitSection.classList.remove('hidden');
+      
+      setTimeout(() => feather.replace(), 100);
+    }
+
+    function setStatus(idx, status) {
+      filteredMembers[idx].keterangan = status;
+      
+      const buttons = document.querySelectorAll(`[data-idx="${idx}"]`);
+      buttons.forEach(btn => {
+        const btnStatus = btn.getAttribute('data-status');
+        if (btnStatus === status) {
+          btn.classList.add('scale-110', 'ring-4');
+          btn.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.3)';
+          if (status === 'Hadir') {
+            btn.classList.add('ring-green-300');
+          } else if (status === 'Sakit') {
+            btn.classList.add('ring-orange-300');
+          } else if (status === 'Izin') {
+            btn.classList.add('ring-blue-300');
+          } else if (status === 'Alpha') {
+            btn.classList.add('ring-red-300');
+          }
+        } else {
+          btn.classList.remove('scale-110', 'ring-4', 'ring-green-300', 'ring-orange-300', 'ring-blue-300', 'ring-red-300');
+          btn.style.boxShadow = '';
+        }
+      });
+    }
+
+    async function submitAbsensi() {
+      const dataToSubmit = filteredMembers.filter(m => m.keterangan);
+
+      if (dataToSubmit.length === 0) {
+        showError('Belum ada anggota yang diabsen!');
+        return;
+      }
+
+      if (dataToSubmit.length < filteredMembers.length) {
+        const belumAbsen = filteredMembers.length - dataToSubmit.length;
+        showError(`Masih ada ${belumAbsen} anggota yang belum diabsen! Harap lengkapi absensi semua anggota sebelum mengirim.`);
+        return;
+      }
+
+      document.getElementById('modalJenisKegiatan').classList.remove('hidden');
+      document.getElementById('modalJenisKegiatan').classList.add('flex');
+      document.getElementById('inputJenisKegiatan').value = '';
+      document.getElementById('inputJenisKegiatan').focus();
+      
+      setTimeout(() => feather.replace(), 100);
+    }
+
+    function closeJenisKegiatanModal() {
+      document.getElementById('modalJenisKegiatan').classList.add('hidden');
+      document.getElementById('modalJenisKegiatan').classList.remove('flex');
+    }
+
+    async function confirmSubmitAbsensi(event) {
+      event.preventDefault();
+
+      const jenisKegiatan = document.getElementById('inputJenisKegiatan').value.trim();
+      
+      if (!jenisKegiatan) {
+        showError('Jenis kegiatan tidak boleh kosong!');
+        return;
+      }
+
+      closeJenisKegiatanModal();
+
+      const now = getCurrentTime();
+      const today = now.toLocaleDateString('id-ID');
+      const currentTime = now.toLocaleTimeString('id-ID', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      });
+      const dataToSubmit = filteredMembers.filter(m => m.keterangan);
+
+      showLoadingModal();
+
+      let successCount = 0;
+      let failCount = 0;
+
+      for (let i = 0; i < dataToSubmit.length; i++) {
+        const member = dataToSubmit[i];
+        updateProgress(i + 1, dataToSubmit.length);
+
+        try {
+          const formData = new URLSearchParams();
+          formData.append('NIA', member.nia);
+          formData.append('Nama Lengkap', member.nama);
+          formData.append('Kelas', member.kelas);
+          formData.append('Tanggal Absen', today);
+          formData.append('Waktu Absen', currentTime);
+          formData.append('Keterangan', member.keterangan);
+          formData.append('Jenis Kegiatan', jenisKegiatan);
+
+          const response = await fetch(SUBMIT_URL, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (response.ok) {
+            successCount++;
+          } else {
+            failCount++;
+          }
+        } catch (error) {
+          failCount++;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      hideLoadingModal();
+
+      if (failCount === 0) {
+        showSuccess(`Berhasil mengirim ${successCount} data absensi untuk kegiatan "${jenisKegiatan}" pada tanggal ${today} pukul ${currentTime} ${currentTimezone}`);
+        filteredMembers.forEach(m => delete m.keterangan);
+        renderAbsensiList();
+      } else {
+        showError(`${successCount} data berhasil, ${failCount} data gagal dikirim`);
+      }
+    }
+
+    function showLoadingModal() {
+      document.getElementById('modalLoading').classList.remove('hidden');
+      document.getElementById('modalLoading').classList.add('flex');
+    }
+
+    function hideLoadingModal() {
+      document.getElementById('modalLoading').classList.add('hidden');
+      document.getElementById('modalLoading').classList.remove('flex');
+    }
+
+    function updateProgress(current, total) {
+      document.getElementById('progressText').textContent = `Mengirim ${current} dari ${total} data...`;
+    }
+
+    function showSuccess(message) {
+      document.getElementById('successMessage').textContent = message;
+      document.getElementById('modalSuccess').classList.remove('hidden');
+      document.getElementById('modalSuccess').classList.add('flex');
+      setTimeout(() => feather.replace(), 100);
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('modalSuccess').classList.add('hidden');
+      document.getElementById('modalSuccess').classList.remove('flex');
+    }
+
+    function showError(message) {
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('modalError').classList.remove('hidden');
+      document.getElementById('modalError').classList.add('flex');
+      setTimeout(() => feather.replace(), 100);
+    }
+
+    function closeErrorModal() {
+      document.getElementById('modalError').classList.add('hidden');
+      document.getElementById('modalError').classList.remove('flex');
+    }
+
+    function showMenu(menu) {
+      currentMenu = menu;
+      document.querySelectorAll('.menu-content').forEach(m => m.classList.add('hidden'));
+      document.getElementById(`menu${menu.charAt(0).toUpperCase() + menu.slice(1)}`).classList.remove('hidden');
+      updateNavButtons();
+
+      if (menu === 'anggota') {
+        renderAnggotaList();
+      } else if (menu === 'settings') {
+        loadSettingsForm();
+      }
+      
+      setTimeout(() => feather.replace(), 100);
+    }
+
+    function loadSettingsForm() {
+      const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
+      document.getElementById('settingsTeacherName').value = config.teacher_name || defaultConfig.teacher_name;
+      updateThemeButtons(config.theme || defaultConfig.theme);
+      
+      const exportSection = document.getElementById('exportDataSection');
+      if (ADMIN_USERS.includes(loggedInUser)) {
+        exportSection.style.display = 'block';
+      } else {
+        exportSection.style.display = 'none';
+      }
+      
+      setTimeout(() => feather.replace(), 100);
+    }
+
+    function setTheme(theme) {
+      if (window.elementSdk) {
+        window.elementSdk.setConfig({ theme: theme });
+      }
+      localStorage.setItem('appTheme', theme);
+      applyThemeStyles(theme);
+      updateThemeButtons(theme);
+      updateThemeToggleBtn(theme);
+    }
+
+    function toggleThemeQuick() {
+      const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
+      const currentTheme = config.theme || defaultConfig.theme || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+    }
+
+    function updateThemeToggleBtn(theme) {
+      const loginIcon = document.getElementById('loginThemeIcon');
+      
+      if (loginIcon) {
+        if (theme === 'dark') {
+          loginIcon.innerHTML = '<i data-feather="moon" class="w-6 h-6"></i>';
+        } else {
+          loginIcon.innerHTML = '<i data-feather="sun" class="w-6 h-6"></i>';
+        }
+        feather.replace();
+      }
+    }
+
+    function updateThemeButtons(theme) {
+      const lightBtn = document.getElementById('themeLightBtn');
+      const darkBtn = document.getElementById('themeDarkBtn');
+      
+      if (theme === 'dark') {
+        darkBtn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+        darkBtn.classList.remove('border-gray-300');
+        lightBtn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+        lightBtn.classList.add('border-gray-300');
+      } else {
+        lightBtn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+        lightBtn.classList.remove('border-gray-300');
+        darkBtn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+        darkBtn.classList.add('border-gray-300');
+      }
+      
+      setTimeout(() => feather.replace(), 100);
+    }
+
+    function applyThemeStyles(theme) {
+      const app = document.getElementById('app');
+      const header = document.querySelector('header');
+      const nav = document.getElementById('bottomNav');
+      const cards = document.querySelectorAll('.bg-white.rounded-xl, .rounded-2xl');
+      const body = document.body;
+      const mainApp = document.getElementById('mainApp');
+      
+      if (theme === 'dark') {
+        if (mainApp && !mainApp.classList.contains('hidden')) {
+          app.style.background = 'linear-gradient(135deg, #0f172a 0%, #020617 100%)';
+        } else {
+          app.style.background = 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%)';
+        }
+        
+        if (header) {
+          header.style.backgroundColor = '#020617';
+        }
+        if (nav) {
+          nav.style.backgroundColor = '#0f172a';
+          nav.style.borderTop = '2px solid #1e293b';
+        }
+        body.style.color = '#ffffff';
+        
+        cards.forEach(card => {
+          card.style.backgroundColor = '#0f172a';
+          card.style.color = '#ffffff';
+          card.style.borderColor = '#1e293b';
+        });
+        
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6, label');
+        headings.forEach(h => {
+          if (!h.classList.contains('text-purple-600') && 
+              !h.classList.contains('text-purple-700') && 
+              !h.classList.contains('text-purple-800') &&
+              !h.classList.contains('text-transparent')) {
+            h.style.color = '#ffffff';
+          }
+        });
+        
+        const paragraphs = document.querySelectorAll('p');
+        paragraphs.forEach(p => {
+          if (!p.classList.contains('text-purple-600') && !p.classList.contains('text-gray-600')) {
+            p.style.color = '#d1d5db';
+          } else if (p.classList.contains('text-gray-600')) {
+            p.style.color = '#9ca3af';
+          }
+        });
+        
+        const spans = document.querySelectorAll('span');
+        spans.forEach(span => {
+          if (!span.closest('.status-btn') && 
+              !span.classList.contains('bg-green-100') && 
+              !span.classList.contains('bg-yellow-100') && 
+              !span.classList.contains('bg-blue-100') && 
+              !span.classList.contains('bg-red-100') &&
+              !span.closest('.text-white') &&
+              !span.closest('#currentDate') &&
+              !span.closest('#currentTime')) {
+            span.style.color = '#ffffff';
+          }
+        });
+        
+        const textDivs = document.querySelectorAll('.text-gray-600, .text-gray-700, .text-gray-800');
+        textDivs.forEach(div => {
+          div.style.color = '#d1d5db';
+        });
+        
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+          input.style.backgroundColor = '#1e293b';
+          input.style.color = '#ffffff';
+          input.style.borderColor = '#334155';
+        });
+        
+        const style = document.createElement('style');
+        style.id = 'dark-theme-style';
+        style.textContent = `
+          input::placeholder, select::placeholder, textarea::placeholder {
+            color: #64748b !important;
+          }
+        `;
+        if (!document.getElementById('dark-theme-style')) {
+          document.head.appendChild(style);
+        }
+        
+        const tables = document.querySelectorAll('table');
+        tables.forEach(table => {
+          table.style.borderColor = '#1e293b';
+          const cells = table.querySelectorAll('th, td');
+          cells.forEach(cell => {
+            if (!cell.classList.contains('bg-gradient-to-r') && !cell.classList.contains('from-blue-50') && !cell.classList.contains('from-purple-50')) {
+              cell.style.backgroundColor = '#0f172a';
+            } else if (cell.classList.contains('from-blue-50') || cell.classList.contains('to-purple-50')) {
+              cell.style.background = 'linear-gradient(to right, #1e293b, #334155)';
+            }
+            cell.style.color = '#ffffff';
+            cell.style.borderColor = '#1e293b';
+          });
+          const headers = table.querySelectorAll('thead tr');
+          headers.forEach(header => {
+            if (!header.querySelector('.bg-gradient-to-r')) {
+              header.style.backgroundColor = '#1e293b';
+            }
+          });
+        });
+        
+        // Update table row hover effects
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+          row.style.backgroundColor = '#0f172a';
+          row.addEventListener('mouseenter', function() {
+            if (theme === 'dark') {
+              this.style.backgroundColor = '#1e293b';
+            }
+          });
+          row.addEventListener('mouseleave', function() {
+            if (theme === 'dark') {
+              this.style.backgroundColor = '#0f172a';
+            }
+          });
+        });
+        
+        const borders = document.querySelectorAll('.border-gray-200, .border-gray-300, .border-2');
+        borders.forEach(el => {
+          el.style.borderColor = '#1e293b';
+        });
+        
+        const gradientBoxes = document.querySelectorAll('.from-purple-50, .from-blue-50');
+        gradientBoxes.forEach(box => {
+          box.style.background = 'linear-gradient(to right, #1e293b, #0f172a)';
+          box.style.borderColor = '#334155';
+        });
+        
+        // Update status badges and colored elements
+        const statusBadges = document.querySelectorAll('.bg-green-100, .bg-yellow-100, .bg-blue-100, .bg-red-100');
+        statusBadges.forEach(badge => {
+          if (badge.classList.contains('bg-green-100')) {
+            badge.style.backgroundColor = '#064e3b';
+            badge.style.color = '#6ee7b7';
+          } else if (badge.classList.contains('bg-yellow-100')) {
+            badge.style.backgroundColor = '#78350f';
+            badge.style.color = '#fde047';
+          } else if (badge.classList.contains('bg-blue-100')) {
+            badge.style.backgroundColor = '#1e3a8a';
+            badge.style.color = '#93c5fd';
+          } else if (badge.classList.contains('bg-red-100')) {
+            badge.style.backgroundColor = '#7f1d1d';
+            badge.style.color = '#fca5a5';
+          }
+        });
+        
+        // Update status background rows
+        const statusRows = document.querySelectorAll('.bg-green-50, .bg-yellow-50, .bg-blue-50, .bg-red-50');
+        statusRows.forEach(row => {
+          if (row.classList.contains('bg-green-50')) {
+            row.style.backgroundColor = '#064e3b20';
+          } else if (row.classList.contains('bg-yellow-50')) {
+            row.style.backgroundColor = '#78350f20';
+          } else if (row.classList.contains('bg-blue-50')) {
+            row.style.backgroundColor = '#1e3a8a20';
+          } else if (row.classList.contains('bg-red-50')) {
+            row.style.backgroundColor = '#7f1d1d20';
+          }
+        });
+        
+      } else {
+        if (mainApp && !mainApp.classList.contains('hidden')) {
+          app.style.background = 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%)';
+        } else {
+          app.style.background = 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%)';
+        }
+        
+        if (header) {
+          header.style.backgroundColor = 'transparent';
+        }
+        if (nav) {
+          nav.style.backgroundColor = '#ffffff';
+          nav.style.borderTop = '2px solid #e5e7eb';
+        }
+        body.style.color = '#000000';
+        
+        cards.forEach(card => {
+          card.style.backgroundColor = '#ffffff';
+          card.style.color = '#000000';
+          card.style.borderColor = '#e5e7eb';
+        });
+        
+        const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6, label');
+        headings.forEach(h => {
+          if (!h.classList.contains('text-white') && 
+              !h.classList.contains('text-purple-600') && 
+              !h.classList.contains('text-purple-700') &&
+              !h.classList.contains('text-purple-800') &&
+              !h.classList.contains('text-transparent')) {
+            h.style.color = '';
+          }
+        });
+        
+        const paragraphs = document.querySelectorAll('p');
+        paragraphs.forEach(p => {
+          if (!p.classList.contains('text-white')) {
+            p.style.color = '';
+          }
+        });
+        
+        const spans = document.querySelectorAll('span');
+        spans.forEach(span => {
+          if (!span.closest('.status-btn') && !span.closest('.text-white')) {
+            span.style.color = '';
+          }
+        });
+        
+        const textDivs = document.querySelectorAll('.text-gray-600, .text-gray-700, .text-gray-800');
+        textDivs.forEach(div => {
+          div.style.color = '';
+        });
+        
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+          input.style.backgroundColor = '#ffffff';
+          input.style.color = '#000000';
+          input.style.borderColor = '#d1d5db';
+        });
+        
+        const darkStyle = document.getElementById('dark-theme-style');
+        if (darkStyle) {
+          darkStyle.remove();
+        }
+        
+        const tables = document.querySelectorAll('table');
+        tables.forEach(table => {
+          table.style.borderColor = '#d1d5db';
+          const cells = table.querySelectorAll('th, td');
+          cells.forEach(cell => {
+            if (!cell.classList.contains('bg-gradient-to-r') && !cell.classList.contains('from-blue-50') && !cell.classList.contains('from-purple-50')) {
+              cell.style.backgroundColor = '#ffffff';
+            } else if (cell.classList.contains('from-blue-50') || cell.classList.contains('to-purple-50')) {
+              cell.style.background = '';
+            }
+            cell.style.color = '#000000';
+            cell.style.borderColor = '#d1d5db';
+          });
+          const headers = table.querySelectorAll('thead tr');
+          headers.forEach(header => {
+            if (!header.querySelector('.bg-gradient-to-r')) {
+              header.style.backgroundColor = '#f9fafb';
+            }
+          });
+        });
+        
+        // Reset table row styles
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+          row.style.backgroundColor = '';
+          row.removeEventListener('mouseenter', function() {});
+          row.removeEventListener('mouseleave', function() {});
+        });
+        
+        const borders = document.querySelectorAll('.border-gray-200, .border-gray-300, .border-2');
+        borders.forEach(el => {
+          el.style.borderColor = '';
+        });
+        
+        const gradientBoxes = document.querySelectorAll('.from-purple-50, .from-blue-50');
+        gradientBoxes.forEach(box => {
+          box.style.background = '';
+          box.style.borderColor = '';
+        });
+        
+        // Reset status badges
+        const statusBadges = document.querySelectorAll('.bg-green-100, .bg-yellow-100, .bg-blue-100, .bg-red-100');
+        statusBadges.forEach(badge => {
+          badge.style.backgroundColor = '';
+          badge.style.color = '';
+        });
+        
+        // Reset status background rows
+        const statusRows = document.querySelectorAll('.bg-green-50, .bg-yellow-50, .bg-blue-50, .bg-red-50');
+        statusRows.forEach(row => {
+          row.style.backgroundColor = '';
+        });
+      }
+    }
+
+    async function saveSettings() {
+      const teacherName = document.getElementById('settingsTeacherName').value.trim();
+      const selectedLanguage = document.getElementById('languageSelect').value;
+      const selectedTimezone = document.getElementById('timezoneSelect').value;
+
+      if (!teacherName) {
+        showSettingsMessage('Nama kakak pembina tidak boleh kosong!', 'error');
+        return;
+      }
+
+      // Simpan nama pembina khusus untuk username yang login
+      const currentTeacherName = localStorage.getItem(`teacherName_${loggedInUser}`);
+      const lastTeacherNameChange = localStorage.getItem(`lastTeacherNameChange_${loggedInUser}`);
+      const now = new Date().getTime();
+      
+      if (currentTeacherName && teacherName !== currentTeacherName) {
+        if (lastTeacherNameChange) {
+          const lastChangeDate = parseInt(lastTeacherNameChange);
+          const oneMonthInMs = 30 * 24 * 60 * 60 * 1000; // 30 hari
+          const timeSinceLastChange = now - lastChangeDate;
+          
+          if (timeSinceLastChange < oneMonthInMs) {
+            const daysLeft = Math.ceil((oneMonthInMs - timeSinceLastChange) / (24 * 60 * 60 * 1000));
+            showSettingsMessage(`❌ Nama kakak pembina hanya bisa diubah 1x per bulan. Coba lagi dalam ${daysLeft} hari.`, 'error');
+            return;
+          }
+        }
+        
+        // Simpan waktu perubahan nama khusus untuk username ini
+        localStorage.setItem(`lastTeacherNameChange_${loggedInUser}`, now.toString());
+      } else if (!currentTeacherName) {
+        // Jika baru pertama kali set nama untuk username ini, simpan waktu
+        localStorage.setItem(`lastTeacherNameChange_${loggedInUser}`, now.toString());
+      }
+
+      if (window.elementSdk) {
+        await window.elementSdk.setConfig({
+          teacher_name: teacherName
+        });
+      }
+
+      // Simpan pengaturan ke localStorage dengan key khusus per username
+      currentLanguage = selectedLanguage;
+      localStorage.setItem('appLanguage', selectedLanguage);
+      
+      if (selectedLanguage === 'ar') {
+        document.documentElement.setAttribute('dir', 'rtl');
+        document.body.style.textAlign = 'right';
+      } else {
+        document.documentElement.setAttribute('dir', 'ltr');
+        document.body.style.textAlign = 'left';
+      }
+      
+      currentTimezone = selectedTimezone;
+      localStorage.setItem('appTimezone', selectedTimezone);
+      
+      // Simpan nama kakak pembina khusus untuk username yang sedang login
+      localStorage.setItem(`teacherName_${loggedInUser}`, teacherName);
+      
+      showSettingsMessage('✅ Pengaturan berhasil disimpan dan akan tetap tersimpan!', 'success');
+      
+      updateUILanguage();
+      updateDateTime();
+    }
+
+    function showSettingsMessage(message, type) {
+      const msgDiv = document.getElementById('settingsMessage');
+      msgDiv.textContent = message;
+      msgDiv.className = 'p-4 rounded-lg text-center font-semibold';
+      
+      if (type === 'success') {
+        msgDiv.classList.add('bg-green-100', 'text-green-700');
+      } else if (type === 'info') {
+        msgDiv.classList.add('bg-blue-100', 'text-blue-700');
+      } else {
+        msgDiv.classList.add('bg-red-100', 'text-red-700');
+      }
+      
+      msgDiv.classList.remove('hidden');
+      
+      setTimeout(() => {
+        msgDiv.classList.add('hidden');
+      }, 4000);
+    }
+
+    function filterAnggotaByKelas() {
+      renderAnggotaList();
+    }
+
+    function renderAnggotaList() {
+      const t = translations[currentLanguage];
+      const kelas = document.getElementById('anggotaKelasFilter').value;
+      const filtered = kelas ? allMembers.filter(m => m.kelas === kelas) : allMembers;
+
+      const contentDiv = document.getElementById('anggotaContent');
+      
+      if (filtered.length === 0) {
+        contentDiv.innerHTML = `<p class="text-gray-600 text-center py-8">${t.noData}</p>`;
+        return;
+      }
+
+      const groupedByKelas = {};
+      filtered.forEach(m => {
+        if (!groupedByKelas[m.kelas]) groupedByKelas[m.kelas] = [];
+        groupedByKelas[m.kelas].push(m);
+      });
+
+      let html = '<div class="space-y-6">';
+      Object.keys(groupedByKelas).sort().forEach(kelas => {
+        html += `
+          <div>
+            <h3 class="text-xl font-bold mb-3 text-gray-800">${t.class} ${kelas} (${groupedByKelas[kelas].length} ${t.member})</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full border-collapse">
+                <thead>
+                  <tr class="bg-gray-100">
+                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">${t.no}</th>
+                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">${t.nia}</th>
+                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">${t.fullName}</th>
+                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">${t.class}</th>
+                    <th class="border border-gray-300 px-4 py-3 text-left font-semibold">${t.gender}</th>
+                  </tr>
+                </thead>
+                <tbody>
+        `;
+        groupedByKelas[kelas].forEach((member, idx) => {
+          html += `
+            <tr class="hover:bg-gray-50">
+              <td class="border border-gray-300 px-4 py-3">${idx + 1}</td>
+              <td class="border border-gray-300 px-4 py-3">${member.nia}</td>
+              <td class="border border-gray-300 px-4 py-3">${member.nama}</td>
+              <td class="border border-gray-300 px-4 py-3">${member.kelas}</td>
+              <td class="border border-gray-300 px-4 py-3">${member.jenisKelamin}</td>
+            </tr>
+          `;
+        });
+        html += `
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      contentDiv.innerHTML = html;
+    }
+
+    async function loadSiswaByKelas() {
+      const kelas = document.getElementById('rekapKelasFilter').value;
+      const kegiatanFilterDiv = document.getElementById('kegiatanFilterDiv');
+      const siswaFilterDiv = document.getElementById('siswaFilterDiv');
+      const dateFilterDiv = document.getElementById('dateFilterDiv');
+      const jamFilterDiv = document.getElementById('jamFilterDiv');
+      const refreshBtnDiv = document.getElementById('refreshBtnDiv');
+      const siswaSelect = document.getElementById('rekapSiswaFilter');
+      const kegiatanSelect = document.getElementById('rekapKegiatanFilter');
+      const dateSelect = document.getElementById('rekapDateFilter');
+      const jamSelect = document.getElementById('rekapJamFilter');
+
+      if (!kelas || kelas === '') {
+        kegiatanFilterDiv.classList.add('hidden');
+        siswaFilterDiv.classList.add('hidden');
+        dateFilterDiv.classList.add('hidden');
+        jamFilterDiv.classList.add('hidden');
+        refreshBtnDiv.classList.add('hidden');
+        document.getElementById('rekapContent').innerHTML = '<p class="text-gray-600 text-center py-8">Pilih kelas untuk melihat rekap</p>';
+        return;
+      }
+
+      // Tampilkan loading
+      document.getElementById('rekapContent').innerHTML = '<div class="text-center py-8"><div class="loading-spinner mx-auto"></div><p class="mt-4 text-gray-600">Memuat data dari Google Sheet...</p></div>';
+
+      try {
+        // Ambil data dari Google Sheet
+        const response = await fetch(REKAP_URL);
+        const csvText = await response.text();
+        const rows = csvText.split('\n').filter(row => row.trim());
+        
+        const rekapData = [];
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].split(',').map(col => col.trim().replace(/^"|"$/g, ''));
+          if (cols.length >= 7 && cols[0]) {
+            rekapData.push({
+              nia: cols[0],
+              nama: cols[1],
+              kelas: cols[2],
+              tanggal: cols[3] || '-',
+              waktu: cols[4] || '-',
+              keterangan: cols[5] || '-',
+              jenisKegiatan: cols[6] || '-'
+            });
+          }
+        }
+
+        // Filter berdasarkan kelas
+        let filteredByKelas = [...rekapData];
+        if (kelas !== 'SEMUA') {
+          filteredByKelas = filteredByKelas.filter(r => r.kelas === kelas);
+        }
+
+        // Populate dropdown Kegiatan
+        const uniqueKegiatan = [...new Set(filteredByKelas.map(r => r.jenisKegiatan))].filter(k => k && k !== '-').sort();
+        kegiatanSelect.innerHTML = '<option value="">-- Pilih Kegiatan --</option>';
+        uniqueKegiatan.forEach(kegiatan => {
+          const option = document.createElement('option');
+          option.value = kegiatan;
+          option.textContent = kegiatan;
+          kegiatanSelect.appendChild(option);
+        });
+
+        // Populate dropdown Tanggal (semua tanggal yang tersedia)
+        const uniqueDates = [...new Set(filteredByKelas.map(r => r.tanggal))].filter(d => d && d !== '-').sort((a, b) => {
+          const [dayA, monthA, yearA] = a.split('/').map(Number);
+          const [dayB, monthB, yearB] = b.split('/').map(Number);
+          const dateA = new Date(yearA, monthA - 1, dayA);
+          const dateB = new Date(yearB, monthB - 1, dayB);
+          return dateB - dateA;
+        });
+        dateSelect.innerHTML = '<option value="">-- Pilih Tanggal --</option>';
+        uniqueDates.forEach(date => {
+          const option = document.createElement('option');
+          option.value = date;
+          option.textContent = date;
+          dateSelect.appendChild(option);
+        });
+
+        // Populate dropdown Jam (semua jam yang tersedia)
+        const uniqueJam = [...new Set(filteredByKelas.map(r => r.waktu))].filter(j => j && j !== '-').sort();
+        jamSelect.innerHTML = '<option value="">-- Pilih Jam --</option>';
+        uniqueJam.forEach(jam => {
+          const option = document.createElement('option');
+          option.value = jam;
+          option.textContent = jam;
+          jamSelect.appendChild(option);
+        });
+
+        // Populate dropdown Siswa
+        let siswaList = [];
+        if (kelas === 'SEMUA') {
+          siswaList = [...allMembers];
+        } else {
+          siswaList = allMembers.filter(m => m.kelas === kelas);
+        }
+        siswaSelect.innerHTML = '<option value="">Semua Siswa</option>';
+        siswaList.forEach(siswa => {
+          const option = document.createElement('option');
+          option.value = siswa.nia;
+          option.textContent = `${siswa.nama} (${siswa.nia})`;
+          siswaSelect.appendChild(option);
+        });
+
+        // Tampilkan semua filter
+        kegiatanFilterDiv.classList.remove('hidden');
+        dateFilterDiv.classList.remove('hidden');
+        jamFilterDiv.classList.remove('hidden');
+        siswaFilterDiv.classList.remove('hidden');
+        refreshBtnDiv.classList.remove('hidden');
+
+        // Tampilkan pesan untuk memilih filter
+        document.getElementById('rekapContent').innerHTML = `
+          <div class="text-center py-12">
+            <div class="mb-4 flex justify-center">
+              <i data-feather="filter" class="w-16 h-16 text-blue-500"></i>
+            </div>
+            <p class="text-gray-600 text-lg font-semibold mb-2">Filter Data Rekap Absensi</p>
+            <p class="text-gray-500 text-sm">Pilih Kegiatan, Tanggal, dan Jam untuk melihat data rekap</p>
+            <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+              <p class="text-blue-700 text-sm">
+                <i data-feather="info" class="w-4 h-4 inline"></i> 
+                Total <strong>${uniqueKegiatan.length}</strong> kegiatan, 
+                <strong>${uniqueDates.length}</strong> tanggal, dan 
+                <strong>${uniqueJam.length}</strong> jam tersedia
+              </p>
+            </div>
+          </div>
+        `;
+        
+        setTimeout(() => feather.replace(), 100);
+
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('rekapContent').innerHTML = '<p class="text-red-600 text-center py-8">❌ Gagal memuat data dari Google Sheet</p>';
+      }
+    }
+
+    async function loadRekapData() {
+      const t = translations[currentLanguage];
+      const kelas = document.getElementById('rekapKelasFilter').value;
+      const siswa = document.getElementById('rekapSiswaFilter') ? document.getElementById('rekapSiswaFilter').value : '';
+      const dateSelect = document.getElementById('rekapDateFilter');
+      const kegiatanSelect = document.getElementById('rekapKegiatanFilter');
+      const jamSelect = document.getElementById('rekapJamFilter');
+      const selectedDate = dateSelect.value;
+      const selectedKegiatan = kegiatanSelect.value;
+      const selectedJam = jamSelect.value;
+
+      if (!kelas || kelas === '') {
+        document.getElementById('rekapContent').innerHTML = '<p class="text-gray-600 text-center py-8">Pilih kelas untuk melihat rekap</p>';
+        return;
+      }
+
+      if (!selectedKegiatan || selectedKegiatan === '') {
+        document.getElementById('rekapContent').innerHTML = `
+          <div class="text-center py-12">
+            <div class="mb-4 flex justify-center">
+              <i data-feather="clipboard" class="w-16 h-16 text-gray-400"></i>
+            </div>
+            <p class="text-gray-600 text-lg">Silakan pilih kegiatan terlebih dahulu</p>
+          </div>
+        `;
+        
+        try {
+          const response = await fetch(REKAP_URL);
+          const csvText = await response.text();
+          const rows = csvText.split('\n').filter(row => row.trim());
+          
+          const rekapData = [];
+          for (let i = 1; i < rows.length; i++) {
+            const cols = rows[i].split(',').map(col => col.trim().replace(/^"|"$/g, ''));
+            if (cols.length >= 7 && cols[0]) {
+              rekapData.push({
+                nia: cols[0],
+                nama: cols[1],
+                kelas: cols[2],
+                tanggal: cols[3] || '-',
+                waktu: cols[4] || '-',
+                keterangan: cols[5] || '-',
+                jenisKegiatan: cols[6] || '-'
+              });
+            }
+          }
+
+          let filteredByKelas = [...rekapData];
+          if (kelas !== 'SEMUA') {
+            filteredByKelas = filteredByKelas.filter(r => r.kelas === kelas);
+          }
+
+          const uniqueKegiatan = [...new Set(filteredByKelas.map(r => r.jenisKegiatan))].filter(k => k && k !== '-').sort();
+
+          kegiatanSelect.innerHTML = '<option value="">Semua Kegiatan</option>';
+          uniqueKegiatan.forEach(kegiatan => {
+            const option = document.createElement('option');
+            option.value = kegiatan;
+            option.textContent = kegiatan;
+            kegiatanSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Error loading kegiatan:', error);
+        }
+        
+        setTimeout(() => feather.replace(), 100);
+        return;
+      }
+
+      if (!selectedDate || selectedDate === '') {
+        document.getElementById('rekapContent').innerHTML = `
+          <div class="text-center py-12">
+            <div class="mb-4 flex justify-center">
+              <i data-feather="calendar" class="w-16 h-16 text-gray-400"></i>
+            </div>
+            <p class="text-gray-600 text-lg">Silakan pilih tanggal terlebih dahulu</p>
+          </div>
+        `;
+        setTimeout(() => feather.replace(), 100);
+        return;
+      }
+
+      if (!selectedJam || selectedJam === '') {
+        document.getElementById('rekapContent').innerHTML = `
+          <div class="text-center py-12">
+            <div class="mb-4 flex justify-center">
+              <i data-feather="clock" class="w-16 h-16 text-gray-400"></i>
+            </div>
+            <p class="text-gray-600 text-lg">Silakan pilih jam terlebih dahulu</p>
+          </div>
+        `;
+        setTimeout(() => feather.replace(), 100);
+        return;
+      }
+
+      document.getElementById('rekapContent').innerHTML = '<div class="text-center py-8"><div class="loading-spinner mx-auto"></div><p class="mt-4 text-gray-600">Memuat data rekap realtime...</p></div>';
+
+      try {
+        const response = await fetch(REKAP_URL);
+        const csvText = await response.text();
+        const rows = csvText.split('\n').filter(row => row.trim());
+        
+        const rekapData = [];
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].split(',').map(col => col.trim().replace(/^"|"$/g, ''));
+          if (cols.length >= 7 && cols[0]) {
+            rekapData.push({
+              nia: cols[0],
+              nama: cols[1],
+              kelas: cols[2],
+              tanggal: cols[3] || '-',
+              waktu: cols[4] || '-',
+              keterangan: cols[5] || '-',
+              jenisKegiatan: cols[6] || '-'
+            });
+          }
+        }
+
+        let filteredByKelas = [...rekapData];
+        if (kelas !== 'SEMUA') {
+          filteredByKelas = filteredByKelas.filter(r => r.kelas === kelas);
+        }
+
+        const uniqueKegiatan = [...new Set(filteredByKelas.map(r => r.jenisKegiatan))].filter(k => k && k !== '-').sort();
+
+        kegiatanSelect.innerHTML = '<option value="">-- Pilih Kegiatan --</option>';
+        uniqueKegiatan.forEach(kegiatan => {
+          const option = document.createElement('option');
+          option.value = kegiatan;
+          option.textContent = kegiatan;
+          if (kegiatan === selectedKegiatan) {
+            option.selected = true;
+          }
+          kegiatanSelect.appendChild(option);
+        });
+
+        let filteredByKegiatan = selectedKegiatan ? filteredByKelas.filter(r => r.jenisKegiatan === selectedKegiatan) : filteredByKelas;
+
+        const uniqueDates = [...new Set(filteredByKegiatan.map(r => r.tanggal))].filter(d => d && d !== '-').sort((a, b) => {
+          const [dayA, monthA, yearA] = a.split('/').map(Number);
+          const [dayB, monthB, yearB] = b.split('/').map(Number);
+          const dateA = new Date(yearA, monthA - 1, dayA);
+          const dateB = new Date(yearB, monthB - 1, dayB);
+          return dateB - dateA;
+        });
+
+        dateSelect.innerHTML = '<option value="">-- Pilih Tanggal --</option>';
+        uniqueDates.forEach(date => {
+          const option = document.createElement('option');
+          option.value = date;
+          option.textContent = date;
+          if (date === selectedDate) {
+            option.selected = true;
+          }
+          dateSelect.appendChild(option);
+        });
+
+        let filteredByDate = selectedDate ? filteredByKegiatan.filter(r => r.tanggal === selectedDate) : filteredByKegiatan;
+
+        const uniqueJam = [...new Set(filteredByDate.map(r => r.waktu))].filter(j => j && j !== '-').sort();
+
+        jamSelect.innerHTML = '<option value="">-- Pilih Jam --</option>';
+        uniqueJam.forEach(jam => {
+          const option = document.createElement('option');
+          option.value = jam;
+          option.textContent = jam;
+          if (jam === selectedJam) {
+            option.selected = true;
+          }
+          jamSelect.appendChild(option);
+        });
+
+        let filtered = selectedJam ? filteredByDate.filter(r => r.waktu === selectedJam) : filteredByDate;
+
+        if (siswa) {
+          filtered = filtered.filter(r => r.nia === siswa);
+        }
+
+        if (filtered.length === 0) {
+          document.getElementById('rekapContent').innerHTML = `<p class="text-gray-600 text-center py-8">${t.noDataForFilter}</p>`;
+          return;
+        }
+
+        const groupedByMonth = {};
+        filtered.forEach(r => {
+          const dateParts = r.tanggal.split('/');
+          if (dateParts.length === 3) {
+            const monthYear = `${dateParts[1]}/${dateParts[2]}`;
+            if (!groupedByMonth[monthYear]) groupedByMonth[monthYear] = [];
+            groupedByMonth[monthYear].push(r);
+          }
+        });
+
+        const sortedMonths = Object.keys(groupedByMonth).sort((a, b) => {
+          const [monthA, yearA] = a.split('/').map(Number);
+          const [monthB, yearB] = b.split('/').map(Number);
+          return (yearB - yearA) || (monthB - monthA);
+        });
+
+        let html = `<div class="mb-4">
+          <div class="flex justify-between items-center flex-wrap gap-3">
+            <h3 class="text-xl font-bold text-gray-800">${t.rekapData} (${filtered.length} ${t.dataAttendance})</h3>
+            <span class="text-sm text-gray-500 bg-blue-50 px-3 py-1.5 rounded-full">${t.fromGoogleSheet}</span>
+          </div>
+        </div><div class="space-y-8">`;
+
+        const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+                           'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        
+        sortedMonths.forEach(monthYear => {
+          const [month, year] = monthYear.split('/');
+          const monthName = monthNames[parseInt(month) - 1];
+          const monthData = groupedByMonth[monthYear];
+
+          const monthHadir = monthData.filter(m => m.keterangan === 'Hadir').length;
+          const monthSakit = monthData.filter(m => m.keterangan === 'Sakit').length;
+          const monthIzin = monthData.filter(m => m.keterangan === 'Izin').length;
+          const monthAlpha = monthData.filter(m => m.keterangan === 'Alpha').length;
+          const monthTotal = monthData.length;
+
+          const pctHadir = ((monthHadir / monthTotal) * 100).toFixed(1);
+          const pctSakit = ((monthSakit / monthTotal) * 100).toFixed(1);
+          const pctIzin = ((monthIzin / monthTotal) * 100).toFixed(1);
+          const pctAlpha = ((monthAlpha / monthTotal) * 100).toFixed(1);
+
+          const groupedByKelas = {};
+          monthData.forEach(r => {
+            if (!groupedByKelas[r.kelas]) groupedByKelas[r.kelas] = [];
+            groupedByKelas[r.kelas].push(r);
+          });
+
+          html += `
+            <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border-2 border-purple-200">
+              <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-4">
+                <div>
+                  <h3 class="text-2xl font-bold text-purple-800 mb-2 flex items-center gap-2">
+                    <i data-feather="calendar" class="w-6 h-6"></i> ${monthName} ${year}
+                  </h3>
+                  <p class="text-sm text-purple-600">${t.totalData}: ${monthTotal} ${t.dataAttendance}</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <div class="bg-white rounded-lg px-3 py-2 shadow-sm">
+                    <div class="text-xs text-gray-600 mb-1">${t.hadir}</div>
+                    <div class="flex items-center gap-2">
+                      <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold text-sm flex items-center gap-1">
+                        <i data-feather="check" class="w-3 h-3"></i> ${monthHadir}
+                      </span>
+                      <span class="text-green-700 font-bold text-lg">${pctHadir}%</span>
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-lg px-3 py-2 shadow-sm">
+                    <div class="text-xs text-gray-600 mb-1">${t.sakit}</div>
+                    <div class="flex items-center gap-2">
+                      <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-bold text-sm flex items-center gap-1">
+                        <i data-feather="activity" class="w-3 h-3"></i> ${monthSakit}
+                      </span>
+                      <span class="text-yellow-700 font-bold text-lg">${pctSakit}%</span>
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-lg px-3 py-2 shadow-sm">
+                    <div class="text-xs text-gray-600 mb-1">${t.izin}</div>
+                    <div class="flex items-center gap-2">
+                      <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold text-sm flex items-center gap-1">
+                        <i data-feather="file-text" class="w-3 h-3"></i> ${monthIzin}
+                      </span>
+                      <span class="text-blue-700 font-bold text-lg">${pctIzin}%</span>
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-lg px-3 py-2 shadow-sm">
+                    <div class="text-xs text-gray-600 mb-1">${t.alpha}</div>
+                    <div class="flex items-center gap-2">
+                      <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full font-bold text-sm flex items-center gap-1">
+                        <i data-feather="x" class="w-3 h-3"></i> ${monthAlpha}
+                      </span>
+                      <span class="text-red-700 font-bold text-lg">${pctAlpha}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-4">
+          `;
+
+          Object.keys(groupedByKelas).sort().forEach(kelasName => {
+            const members = groupedByKelas[kelasName];
+            const hadir = members.filter(m => m.keterangan === 'Hadir').length;
+            const sakit = members.filter(m => m.keterangan === 'Sakit').length;
+            const izin = members.filter(m => m.keterangan === 'Izin').length;
+            const alpha = members.filter(m => m.keterangan === 'Alpha').length;
+
+            html += `
+              <div class="bg-white border-2 border-blue-200 rounded-xl p-4 shadow-md">
+                <div class="flex justify-between items-center mb-3">
+                  <h5 class="text-lg font-bold text-gray-800">${t.class} ${kelasName} (${members.length} ${t.dataAttendance})</h5>
+                  <div class="flex gap-2 text-xs flex-wrap">
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold flex items-center gap-1">
+                      <i data-feather="check" class="w-3 h-3"></i> ${hadir}
+                    </span>
+                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-semibold flex items-center gap-1">
+                      <i data-feather="activity" class="w-3 h-3"></i> ${sakit}
+                    </span>
+                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold flex items-center gap-1">
+                      <i data-feather="file-text" class="w-3 h-3"></i> ${izin}
+                    </span>
+                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full font-semibold flex items-center gap-1">
+                      <i data-feather="x" class="w-3 h-3"></i> ${alpha}
+                    </span>
+                  </div>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full border-collapse">
+                    <thead>
+                      <tr class="bg-gradient-to-r from-blue-50 to-purple-50">
+                        <th class="border border-gray-300 px-3 py-2 text-left font-semibold text-sm">${t.no}</th>
+                        <th class="border border-gray-300 px-3 py-2 text-left font-semibold text-sm">${t.nia}</th>
+                        <th class="border border-gray-300 px-3 py-2 text-left font-semibold text-sm">${t.fullName}</th>
+                        <th class="border border-gray-300 px-3 py-2 text-left font-semibold text-sm">${t.date}</th>
+                        <th class="border border-gray-300 px-3 py-2 text-left font-semibold text-sm">${t.time}</th>
+                        <th class="border border-gray-300 px-3 py-2 text-left font-semibold text-sm">${t.status}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            members.forEach((member, idx) => {
+              let statusClass = '';
+              let statusBadge = '';
+              if (member.keterangan === 'Hadir') {
+                statusClass = 'bg-green-50';
+                statusBadge = `<span class="bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold text-xs flex items-center gap-1"><i data-feather="check" class="w-3 h-3"></i> ${t.hadir}</span>`;
+              } else if (member.keterangan === 'Sakit') {
+                statusClass = 'bg-yellow-50';
+                statusBadge = `<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-semibold text-xs flex items-center gap-1"><i data-feather="activity" class="w-3 h-3"></i> ${t.sakit}</span>`;
+              } else if (member.keterangan === 'Izin') {
+                statusClass = 'bg-blue-50';
+                statusBadge = `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold text-xs flex items-center gap-1"><i data-feather="file-text" class="w-3 h-3"></i> ${t.izin}</span>`;
+              } else if (member.keterangan === 'Alpha') {
+                statusClass = 'bg-red-50';
+                statusBadge = `<span class="bg-red-100 text-red-700 px-2 py-1 rounded-full font-semibold text-xs flex items-center gap-1"><i data-feather="x" class="w-3 h-3"></i> ${t.alpha}</span>`;
+              }
+
+              html += `
+                <tr class="hover:bg-gray-100 ${statusClass} transition-colors">
+                  <td class="border border-gray-300 px-3 py-2 text-sm">${idx + 1}</td>
+                  <td class="border border-gray-300 px-3 py-2 font-mono text-sm">${member.nia}</td>
+                  <td class="border border-gray-300 px-3 py-2 font-semibold text-sm">${member.nama}</td>
+                  <td class="border border-gray-300 px-3 py-2 text-gray-700 text-sm font-medium flex items-center gap-1">
+                    <i data-feather="calendar" class="w-3 h-3"></i> ${member.tanggal}
+                  </td>
+                  <td class="border border-gray-300 px-3 py-2 text-gray-600 text-sm"><i data-feather="clock" class="w-3 h-3 inline"></i> ${member.waktu || '-'}</td>
+                  <td class="border border-gray-300 px-3 py-2 text-sm">${statusBadge}</td>
+                </tr>
+              `;
+            });
+
+            html += `
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `;
+          });
+
+          html += `
+              </div>
+            </div>
+          `;
+        });
+
+        html += '</div>';
+        document.getElementById('rekapContent').innerHTML = html;
+        
+        setTimeout(() => feather.replace(), 100);
+
+      } catch (error) {
+        document.getElementById('rekapContent').innerHTML = '<p class="text-red-600 text-center py-8">❌ Gagal memuat data rekap. Pastikan Google Sheet sudah dipublikasikan.</p>';
+      }
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['school_name', config.school_name || defaultConfig.school_name],
+          ['teacher_name', config.teacher_name || defaultConfig.teacher_name],
+          ['menu_absensi', config.menu_absensi || defaultConfig.menu_absensi],
+          ['menu_rekap', config.menu_rekap || defaultConfig.menu_rekap],
+          ['menu_anggota', config.menu_anggota || defaultConfig.menu_anggota],
+          ['menu_settings_label', config.menu_settings_label || defaultConfig.menu_settings_label]
+        ])
+      });
+    }
+
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.addEventListener('selectstart', (e) => e.preventDefault());
+    document.addEventListener('dragstart', (e) => e.preventDefault());
+    document.addEventListener('copy', (e) => e.preventDefault());
+    document.addEventListener('cut', (e) => e.preventDefault());
+    
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A')) {
+        e.preventDefault();
+        return false;
+      }
+      if (e.keyCode === 123 || 
+          (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+          (e.ctrlKey && e.keyCode === 85)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('loggedInUser');
+      const savedTheme = localStorage.getItem('appTheme') || 'light';
+      const savedLanguage = localStorage.getItem('appLanguage') || 'id';
+      const savedTimezone = localStorage.getItem('appTimezone') || 'WIB';
+      
+      currentTimezone = savedTimezone;
+      if (document.getElementById('timezoneSelect')) {
+        document.getElementById('timezoneSelect').value = savedTimezone;
+      }
+      
+      currentLanguage = savedLanguage;
+      if (document.getElementById('languageSelect')) {
+        document.getElementById('languageSelect').value = savedLanguage;
+      }
+      
+      if (savedLanguage === 'ar') {
+        document.documentElement.setAttribute('dir', 'rtl');
+        document.body.style.textAlign = 'right';
+      } else {
+        document.documentElement.setAttribute('dir', 'ltr');
+        document.body.style.textAlign = 'left';
+      }
+      
+      updateUILanguage();
+      
+      applyThemeStyles(savedTheme);
+      updateThemeToggleBtn(savedTheme);
+      
+      if (savedUser && VALID_USERS[savedUser]) {
+        loggedInUser = savedUser;
+        
+        // Ambil nama pembina khusus untuk username ini
+        const savedTeacherName = localStorage.getItem(`teacherName_${savedUser}`);
+        
+        // Gunakan nama yang tersimpan jika ada, jika tidak gunakan nama dari username
+        let displayName;
+        if (savedTeacherName) {
+          displayName = savedTeacherName;
+        } else {
+          displayName = savedUser.split(' ').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+          ).join(' ');
+        }
+        
+        if (window.elementSdk) {
+          window.elementSdk.setConfig({ teacher_name: displayName, theme: savedTheme });
+        } else {
+          defaultConfig.teacher_name = displayName;
+          defaultConfig.theme = savedTheme;
+          document.getElementById('teacherName').textContent = `Guru: ${displayName}`;
+        }
+        
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        document.getElementById('bottomNav').style.display = 'block';
+        
+        loadMemberData();
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+      }
+      
+      setTimeout(() => feather.replace(), 100);
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b7ae43801859d14',t:'MTc2NzM2MzU2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
